@@ -9,9 +9,13 @@ Includes two sample project. One is a test project to load (compiled) grammars a
 
 
 ## Screenshots
+
 ![main screen](images/gold_mainscreen.jpg)
+
 ![main screen](images/gold_sourcescreen.jpg)
+
 ![main screen](images/gold_actionscreen.jpg)
+
 ![main screen](images/gold_treescreen.jpg)
 
 ## History
