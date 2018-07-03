@@ -1,0 +1,6 @@
+500x
+origineel:
+28.4 ms
+
+10.6 ms
+

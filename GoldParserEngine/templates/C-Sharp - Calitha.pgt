@@ -1,0 +1,185 @@
+##TEMPLATE-NAME 'C# - Calitha Engine'
+##LANGUAGE 'C#'
+##ENGINE-NAME 'Calitha GOLD Parser Engine'
+##AUTHOR 'Robert van Loenhout' 
+##FILE-EXTENSION 'cs'
+##NOTES
+This template creates the constants for symbols
+and rules and a custom parser class that acts
+as a template for parsing any source.
+The custom objects will be created after the
+entire source has been parsed by the LALR
+parser.
+##END-NOTES
+##ID-CASE UPPERCASE
+##ID-SEPARATOR '_'
+##ID-SYMBOL-PREFIX 'Symbol'
+##ID-RULE-PREFIX 'Rule'
+
+using System;
+using System.IO;
+using System.Runtime.Serialization;
+using com.calitha.goldparser.lalr;
+using com.calitha.commons;
+
+namespace com.calitha.goldparser
+{
+
+    [Serializable()]
+    public class SymbolException : System.Exception
+    {
+        public SymbolException(string message) : base(message)
+        {
+        }
+
+        public SymbolException(string message,
+            Exception inner) : base(message, inner)
+        {
+        }
+
+        protected SymbolException(SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
+
+    }
+
+    [Serializable()]
+    public class RuleException : System.Exception
+    {
+
+        public RuleException(string message) : base(message)
+        {
+        }
+
+        public RuleException(string message,
+                             Exception inner) : base(message, inner)
+        {
+        }
+
+        protected RuleException(SerializationInfo info,
+                                StreamingContext context) : base(info, context)
+        {
+        }
+
+    }
+
+    enum SymbolConstants : int
+    {
+##SYMBOLS
+##DELIMITER ','
+        %ID.Padded% = %Value.Padded%%Delimiter% // %Description%
+##END-SYMBOLS
+    };
+
+    enum RuleConstants : int
+    {
+##RULES
+##DELIMITER ','
+        %ID.Padded% = %Value.Padded%%Delimiter% // %Description%
+##END-RULES
+    };
+
+    public class MyParser
+    {
+        private LALRParser parser;
+
+        public MyParser(string filename)
+        {
+            FileStream stream = new FileStream(filename,
+                                               FileMode.Open, 
+                                               FileAccess.Read, 
+                                               FileShare.Read);
+            Init(stream);
+            stream.Close();
+        }
+
+        public MyParser(string baseName, string resourceName)
+        {
+            byte[] buffer = ResourceUtil.GetByteArrayResource(
+                System.Reflection.Assembly.GetExecutingAssembly(),
+                baseName,
+                resourceName);
+            MemoryStream stream = new MemoryStream(buffer);
+            Init(stream);
+            stream.Close();
+        }
+
+        public MyParser(Stream stream)
+        {
+            Init(stream);
+        }
+
+        private void Init(Stream stream)
+        {
+            CGTReader reader = new CGTReader(stream);
+            parser = reader.CreateNewParser();
+            parser.TrimReductions = false;
+            parser.StoreTokens = LALRParser.StoreTokensMode.NoUserObject;
+
+            parser.OnTokenError += new LALRParser.TokenErrorHandler(TokenErrorEvent);
+            parser.OnParseError += new LALRParser.ParseErrorHandler(ParseErrorEvent);
+        }
+
+        public void Parse(string source)
+        {
+            NonterminalToken token = parser.Parse(source);
+            if (token != null)
+            {
+                Object obj = CreateObject(token);
+                //todo: Use your object any way you like
+            }
+        }
+
+        private Object CreateObject(Token token)
+        {
+            if (token is TerminalToken)
+                return CreateObjectFromTerminal((TerminalToken)token);
+            else
+                return CreateObjectFromNonterminal((NonterminalToken)token);
+        }
+
+        private Object CreateObjectFromTerminal(TerminalToken token)
+        {
+            switch (token.Symbol.Id)
+            {
+##SYMBOLS
+                case (int)SymbolConstants.%ID% :
+                //%Description%
+                //todo: Create a new object that corresponds to the symbol
+                return null;
+
+##END-SYMBOLS
+            }
+            throw new SymbolException("Unknown symbol");
+        }
+
+        public Object CreateObjectFromNonterminal(NonterminalToken token)
+        {
+            switch (token.Rule.Id)
+            {
+##RULES
+                case (int)RuleConstants.%ID% :
+                //%Description%
+                //todo: Create a new object using the stored tokens.
+                return null;
+
+##END-RULES
+            }
+            throw new RuleException("Unknown rule");
+        }
+
+        private void TokenErrorEvent(LALRParser parser, TokenErrorEventArgs args)
+        {
+            string message = "Token error with input: '"+args.Token.ToString()+"'";
+            //todo: Report message to UI?
+        }
+
+        private void ParseErrorEvent(LALRParser parser, ParseErrorEventArgs args)
+        {
+            string message = "Parse error caused by token: '"+args.UnexpectedToken.ToString()+"'";
+            //todo: Report message to UI?
+        }
+
+    }
+}

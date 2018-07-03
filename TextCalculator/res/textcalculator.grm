@@ -1,0 +1,32 @@
+"Name"     = Text Calculator Grammar
+"Author"   = Robert van Loenhout
+"Version"  = 1.0
+"About"    = 'Example for testing Calitha C#GPEngine'
+
+"Start Symbol" = <Expression>
+"Auto Whitespace" = True
+
+! ------------------------------------------------- Sets
+
+
+! ------------------------------------------------- Terminals
+
+Integer = {Digit}+
+Float = {Digit}*'.'{Digit}+
+
+! ------------------------------------------------- Rules
+
+<Expression>  ::= <Expression> '+' <Mult Exp> 
+                | <Expression> '-' <Mult Exp> 
+                | <Mult Exp> 
+
+<Mult Exp>    ::= <Mult Exp> '*' <Negate Exp> 
+                | <Mult Exp> '/' <Negate Exp> 
+                | <Negate Exp> 
+
+<Negate Exp>  ::= '-' <Value> 
+                | <Value> 
+
+<Value>       ::= Integer
+                | Float
+                | '(' <Expression> ')'

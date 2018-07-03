@@ -1,0 +1,63 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoldParserEngineTest", "GoldParserEngineTest.csproj", "{49CBEA9D-A5CC-466A-B92D-5337963621FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoldParserEngine", "..\GoldParserEngine\GoldParserEngine.csproj", "{837DC4CB-4BEA-4171-8366-A1AA6207F576}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalithaLibrary", "..\CalithaLib\CalithaLibrary.csproj", "{9E8F8FBC-29C0-4DCB-83CE-058AA757D570}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextCalculator", "..\TextCalculator\TextCalculator.csproj", "{1114BE45-04E1-43B4-ADEB-A3F39D2C00B1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9E8F8FBC-29C0-4DCB-83CE-058AA757D570} = {9E8F8FBC-29C0-4DCB-83CE-058AA757D570}
+		{837DC4CB-4BEA-4171-8366-A1AA6207F576} = {837DC4CB-4BEA-4171-8366-A1AA6207F576}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Documentation|Any CPU = Documentation|Any CPU
+		Release|Any CPU = Release|Any CPU
+		StronglyNamedAssembly|Any CPU = StronglyNamedAssembly|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49CBEA9D-A5CC-466A-B92D-5337963621FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49CBEA9D-A5CC-466A-B92D-5337963621FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49CBEA9D-A5CC-466A-B92D-5337963621FA}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
+		{49CBEA9D-A5CC-466A-B92D-5337963621FA}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
+		{49CBEA9D-A5CC-466A-B92D-5337963621FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49CBEA9D-A5CC-466A-B92D-5337963621FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49CBEA9D-A5CC-466A-B92D-5337963621FA}.StronglyNamedAssembly|Any CPU.ActiveCfg = StronglyNamedAssembly|Any CPU
+		{49CBEA9D-A5CC-466A-B92D-5337963621FA}.StronglyNamedAssembly|Any CPU.Build.0 = StronglyNamedAssembly|Any CPU
+		{837DC4CB-4BEA-4171-8366-A1AA6207F576}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{837DC4CB-4BEA-4171-8366-A1AA6207F576}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{837DC4CB-4BEA-4171-8366-A1AA6207F576}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
+		{837DC4CB-4BEA-4171-8366-A1AA6207F576}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
+		{837DC4CB-4BEA-4171-8366-A1AA6207F576}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{837DC4CB-4BEA-4171-8366-A1AA6207F576}.Release|Any CPU.Build.0 = Release|Any CPU
+		{837DC4CB-4BEA-4171-8366-A1AA6207F576}.StronglyNamedAssembly|Any CPU.ActiveCfg = StronglyNamedAssembly|Any CPU
+		{837DC4CB-4BEA-4171-8366-A1AA6207F576}.StronglyNamedAssembly|Any CPU.Build.0 = StronglyNamedAssembly|Any CPU
+		{9E8F8FBC-29C0-4DCB-83CE-058AA757D570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E8F8FBC-29C0-4DCB-83CE-058AA757D570}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E8F8FBC-29C0-4DCB-83CE-058AA757D570}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
+		{9E8F8FBC-29C0-4DCB-83CE-058AA757D570}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
+		{9E8F8FBC-29C0-4DCB-83CE-058AA757D570}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E8F8FBC-29C0-4DCB-83CE-058AA757D570}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E8F8FBC-29C0-4DCB-83CE-058AA757D570}.StronglyNamedAssembly|Any CPU.ActiveCfg = StronglyNamedAssembly|Any CPU
+		{9E8F8FBC-29C0-4DCB-83CE-058AA757D570}.StronglyNamedAssembly|Any CPU.Build.0 = StronglyNamedAssembly|Any CPU
+		{1114BE45-04E1-43B4-ADEB-A3F39D2C00B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1114BE45-04E1-43B4-ADEB-A3F39D2C00B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1114BE45-04E1-43B4-ADEB-A3F39D2C00B1}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{1114BE45-04E1-43B4-ADEB-A3F39D2C00B1}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{1114BE45-04E1-43B4-ADEB-A3F39D2C00B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1114BE45-04E1-43B4-ADEB-A3F39D2C00B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1114BE45-04E1-43B4-ADEB-A3F39D2C00B1}.StronglyNamedAssembly|Any CPU.ActiveCfg = StronglyNamedAssembly|Any CPU
+		{1114BE45-04E1-43B4-ADEB-A3F39D2C00B1}.StronglyNamedAssembly|Any CPU.Build.0 = StronglyNamedAssembly|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(DevPartner) = postSolution
+	EndGlobalSection
+	GlobalSection(DevPartner) = postSolution
+	EndGlobalSection
+EndGlobal

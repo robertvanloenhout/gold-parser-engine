@@ -1,0 +1,1034 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MorozovGoldParser</name>
+    </assembly>
+    <members>
+        <member name="T:Morozov.GoldParser.TokenStack">
+            <summary>
+            Stack of tokens.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.TokenStack.#ctor">
+            <summary>
+            Creates a new instance of the <c>TokenStack</c> class.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.TokenStack.PushToken(Morozov.GoldParser.Token)">
+            <summary>
+            Pushes token to the stack.
+            </summary>
+            <param name="token">Token to push to the stack.</param>
+        </member>
+        <member name="M:Morozov.GoldParser.TokenStack.PopToken">
+            <summary>
+            Pops token from the stack.
+            </summary>
+            <returns>Token from the stack.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.TokenStack.PeekToken">
+            <summary>
+            Gets token from the top of the stack.
+            </summary>
+            <returns>Token from the top of the stack.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.TokenStack.CopyTo(Morozov.GoldParser.Token[],System.Int32)">
+            <summary>
+            Copies the token stack contents to the token array.
+            </summary>
+            <param name="array">Array to copy data to.</param>
+            <param name="index">Start index in the array to copy tokens.</param>
+        </member>
+        <member name="T:Morozov.GoldParser.Parser">
+            <summary>
+            Parser class.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Parser.#ctor(System.String,Morozov.GoldParser.Grammar)">
+            <summary>
+            Creates a new instance of the <c>Parser</c> class.
+            </summary>
+            <param name="input">String to parse.</param>
+            <param name="grammar">Grammar rules.</param>
+        </member>
+        <member name="M:Morozov.GoldParser.Parser.Parse">
+            <summary>
+            Executes a parse.  When this method is called, the parsing engine
+            reads information from the source text (either a string or a file)
+            and then reports what action was taken. This ranges from a token
+            being read and recognized from the source, a parse reduction, or a type of error.
+            </summary>
+            <returns>ParseMessage indicating parser state.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.Parser.Grammar">
+            <summary>
+            Gets the parser's grammar.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Parser.TrimReductions">
+            <summary>
+            Gets or sets flag to trim reductions.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Parser.Comments">
+            <summary>
+            Gets a hash table of all parsed comment lines.
+            </summary>
+            <remarks>Line number is used as a key.</remarks>
+        </member>
+        <member name="P:Morozov.GoldParser.Parser.CurrentLalrState">
+            <summary>
+            Gets current LALR state.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Parser.CurrentReduction">
+            <summary>
+            Gets current reduction.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Parser.LineNumber">
+            <summary>
+            Gets current line.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Parser.CurrentToken">
+            <summary>
+            Gets current token.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Parser.TokenTable">
+            <summary>
+            Gets current token stack.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.Parser.TokenParseResult">
+            <summary>
+            Result of parsing token.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.ParseMessage">
+            <summary>
+            Available parse messages.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.ParseMessage.Empty">
+            <summary>
+            Nothing
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.ParseMessage.TokenRead">
+            <summary>
+            Each time a token is read, this message is generated.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.ParseMessage.Reduction">
+            <summary>
+            When the engine is able to reduce a rule,
+            this message is returned. The rule that was
+            reduced is set in the GOLDParser's ReduceRule property.
+            The tokens that are reduced and correspond the
+            rule's definition are stored in the Tokens() property.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.ParseMessage.Accept">
+            <summary>
+            The engine will returns this message when the source
+            text has been accepted as both complete and correct.
+            In other words, the source text was successfully analyzed.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.ParseMessage.NotLoadedError">
+            <summary>
+            Before any parsing can take place,
+            a Compiled Grammar Table file must be loaded.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.ParseMessage.LexicalError">
+            <summary>
+            The tokenizer will generate this message when
+            it is unable to recognize a series of characters
+            as a valid token. To recover, pop the invalid
+            token from the input queue.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.ParseMessage.SyntaxError">
+            <summary>
+            Often the parser will read a token that is not expected
+            in the grammar. When this happens, the Tokens() property
+            is filled with tokens the parsing engine expected to read.
+            To recover: push one of the expected tokens on the input queue.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.ParseMessage.CommentError">
+            <summary>
+            The parser reached the end of the file while reading a comment.
+            This is caused when the source text contains a "run-away"
+            comment, or in other words, a block comment that lacks the
+            delimiter.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.ParseMessage.InternalError">
+            <summary>
+            Something is wrong, very wrong.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.SymbolType">
+            <summary>
+            Type of symbol.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.SymbolType.NonTerminal">
+            <summary>
+            Normal nonterminal
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.SymbolType.Terminal">
+            <summary>
+            Normal terminal
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.SymbolType.Whitespace">
+            <summary>
+            This Whitespace symbols is a special terminal
+            that is automatically ignored the the parsing engine.
+            Any text accepted as whitespace is considered
+            to be inconsequential and "meaningless".
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.SymbolType.End">
+            <summary>
+            The End symbol is generated when the tokenizer
+            reaches the end of the source text.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.SymbolType.CommentStart">
+            <summary>
+            This type of symbol designates the start of a block quote.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.SymbolType.CommentEnd">
+            <summary>
+            This type of symbol designates the end of a block quote.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.SymbolType.CommentLine">
+            <summary>
+            When the engine reads a token that is recognized as
+            a line comment, the remaining characters on the line
+            are automatically ignored by the parser.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.SymbolType.Error">
+            <summary>
+            The Error symbol is a general-purpose means
+            of representing characters that were not recognized
+            by the tokenizer. In other words, when the tokenizer
+            reads a series of characters that is not accepted
+            by the DFA engine, a token of this type is created.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.RuleCollection">
+            <summary>
+            Contains read only collection of rules.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.RuleCollection.#ctor(Morozov.GoldParser.Rule[])">
+            <summary>
+            Creates a new instance of <c>RuleCollection</c> class.
+            </summary>
+            <param name="ruleTable">
+            Array of rules to initialize the collection.
+            </param>
+        </member>
+        <member name="M:Morozov.GoldParser.RuleCollection.GetEnumerator">
+            <summary>
+            Creates a new IEnumerator for the collection.
+            </summary>
+            <returns>New instance of IEnumerator.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.RuleCollection.Item(System.Int32)">
+            <summary>
+            Gets a rule by its index.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.RuleCollection.Count">
+            <summary>
+            Gets number of rules.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.LalrStateAction">
+            <summary>
+            Action in a LALR State. 
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.LalrStateAction.#ctor(System.Int32,Morozov.GoldParser.Symbol,Morozov.GoldParser.LalrAction,System.Int32)">
+            <summary>
+            Creats a new instance of the <c>LalrStateAction</c> class.
+            </summary>
+            <param name="index">Index of the LALR state action.</param>
+            <param name="symbol">Symbol associated with the action.</param>
+            <param name="action">Action type.</param>
+            <param name="value">Action value.</param>
+        </member>
+        <member name="P:Morozov.GoldParser.LalrStateAction.Index">
+            <summary>
+            Gets index of the LALR state action.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.LalrStateAction.Symbol">
+            <summary>
+            Gets symbol associated with the LALR state action.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.LalrStateAction.Action">
+            <summary>
+            Gets action type.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.LalrStateAction.Value">
+            <summary>
+            Gets the action value.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.LalrStateCollection">
+            <summary>
+            Contains read only collection of LALR states.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.LalrStateCollection.#ctor(Morozov.GoldParser.LalrState[])">
+            <summary>
+            Creates a new instance of <c>LalrStateCollection</c> class.
+            </summary>
+            <param name="lalrStateTable">
+            Array of LALR states to initialize the collection.
+            </param>
+        </member>
+        <member name="M:Morozov.GoldParser.LalrStateCollection.GetEnumerator">
+            <summary>
+            Creates a new IEnumerator for the collection.
+            </summary>
+            <returns>New instance of IEnumerator.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.LalrStateCollection.Item(System.Int32)">
+            <summary>
+            Gets LALR state by its index.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.LalrStateCollection.Count">
+            <summary>
+            Gets number of LALR states.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.CharReader">
+            <summary>
+            Reads characters from a string.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.CharReader.EndOfString">
+            <summary>
+            Special character to identify end of the string.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.CharReader.#ctor(System.String)">
+            <summary>
+            Creates a new instance of <c>CharReader</c> class.
+            </summary>
+            <param name="source">Source string to parse.</param>
+        </member>
+        <member name="M:Morozov.GoldParser.CharReader.GetChar(System.Int32)">
+            <summary>
+            Gets a look-ahead char.
+            </summary>
+            <param name="shift">Number of chars to look ahead.</param>
+            <returns>Char at requested position.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.CharReader.Accept">
+            <summary>
+            Returns current char and movesto the next char.
+            </summary>
+            <returns>Current char.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.CharReader.Accept(System.Int32)">
+            <summary>
+            Returns a string and moves the pointer to the next char after it.
+            </summary>
+            <param name="count">Number of chars to read.</param>
+            <returns>String with count chars.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.CharReader.AcceptChar">
+            <summary>
+            Returns current char and increments current index.
+            </summary>
+            <returns>Current char.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.CharReader.AcceptToLineEnd">
+            <summary>
+            Returns substring till the end of line and moves
+            current index to position after it.
+            </summary>
+            <returns>Substring till the end of line.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.CharReader.CurrentChar">
+            <summary>
+            Gets current char.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.CharReader.LineNumber">
+            <summary>
+            Gets current line number. It is 1-based.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.CharSetCollection">
+            <summary>
+            Contains read only collection of char sets.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.CharSetCollection.#ctor(System.String[])">
+            <summary>
+            Creates a new instance of <c>CharSetCollection</c> class.
+            </summary>
+            <param name="strings">
+            Array of char set strings to initialize the collection.
+            </param>
+        </member>
+        <member name="M:Morozov.GoldParser.CharSetCollection.GetEnumerator">
+            <summary>
+            Creates a new IEnumerator for the collection.
+            </summary>
+            <returns>New instance of IEnumerator.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.CharSetCollection.Item(System.Int32)">
+            <summary>
+            Gets a char set by its index.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.CharSetCollection.Count">
+            <summary>
+            Gets number of char set strings.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.TokenReader">
+            <summary>
+            Reads tokens from the CharReader using grammar rules.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.TokenReader.#ctor(Morozov.GoldParser.CharReader,Morozov.GoldParser.Grammar)">
+            <summary>
+            Creates a new instance of the <c>TokenReader</c> class.
+            </summary>
+            <param name="reader">Source to parse.</param>
+            <param name="grammar">Grammar rules.</param>
+        </member>
+        <member name="M:Morozov.GoldParser.TokenReader.ReadToken">
+            <summary>
+            Reads the next token.
+            </summary>
+            <returns>Read token.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.TokenReader.ReadToLineEnd">
+            <summary>
+            Reads the source string to the end of the line.
+            </summary>
+            <returns>Read string.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.TokenReader.LineNumber">
+            <summary>
+            Gets current line number.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.Rule">
+            <summary>
+            Rule is the logical structures of the grammar.
+            </summary>
+            <remarks>
+            Rules consist of a head containing a nonterminal 
+            followed by a series of both nonterminals and terminals.
+            </remarks>	
+        </member>
+        <member name="M:Morozov.GoldParser.Rule.#ctor(System.Int32,Morozov.GoldParser.Symbol,Morozov.GoldParser.Symbol[])">
+            <summary>
+            Creates a new instance of <c>Rule</c> class.
+            </summary>
+            <param name="index">Index of the rule in the grammar rule table.</param>
+            <param name="nonTerminal">Nonterminal of the rule.</param>
+            <param name="symbols">Terminal and nonterminal symbols of the rule.</param>
+        </member>
+        <member name="M:Morozov.GoldParser.Rule.ToString">
+            <summary>
+            Returns the Backus-Noir representation of the rule.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Morozov.GoldParser.Rule.Index">
+            <summary>
+            Gets index of the rule in the rule table.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Rule.NonTerminal">
+            <summary>
+            Gets the head symbol of the rule.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Rule.Name">
+            <summary>
+            Gets name of the rule.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Rule.Count">
+            <summary>
+            Gets number of symbols.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Rule.Item(System.Int32)">
+            <summary>
+            Gets symbol by its index.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Rule.ContainsOneNonTerminal">
+            <summary>
+            Gets true if the rule contains exactly one symbol.
+            </summary>
+            <remarks>Used by the Parser object to TrimReductions</remarks>
+        </member>
+        <member name="P:Morozov.GoldParser.Rule.Definition">
+            <summary>
+            Gets the rule definition.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.Grammar">
+            <summary>
+            Contains grammar tables required for parsing.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.Grammar.FileHeader">
+            <summary>
+            Identifies Gold parser grammar file.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Creates a new instance of <c>Grammar</c> class
+            </summary>
+            <param name="reader"></param>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.Load">
+            <summary>
+            Loads grammar from the binary reader.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadNextRecord">
+            <summary>
+            Reads the next record in the binary grammar file.
+            </summary>
+            <returns>Read record type.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadHeader">
+            <summary>
+            Reads grammar header information.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadTableCounts">
+            <summary>
+            Reads table record counts and initializes tables.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadInitialStates">
+            <summary>
+            Read initial DFA and LALR states.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadSymbols">
+            <summary>
+            Read symbol information.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadCharSets">
+            <summary>
+            Read char set information.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadRules">
+            <summary>
+            Read rule information.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadDfaStates">
+            <summary>
+            Read DFA state information.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadLalrStates">
+            <summary>
+            Read LALR state information.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.CreateDfaTransitionVector(Morozov.GoldParser.Grammar.DfaEdge[])">
+            <summary>
+            Creates the DFA state transition vector.
+            </summary>
+            <param name="edges">Array of automata edges.</param>
+            <returns>Hashtable with the transition information.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadEmptyEntry">
+            <summary>
+            Reads empty entry from the grammar file.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadStringEntry">
+            <summary>
+            Reads string entry from the grammar file.
+            </summary>
+            <returns>String entry content.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadInt16Entry">
+            <summary>
+            Reads Int16 entry from the grammar file.
+            </summary>
+            <returns>Int16 entry content.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadByteEntry">
+            <summary>
+            Reads byte entry from the grammar file.
+            </summary>
+            <returns>Byte entry content.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadBoolEntry">
+            <summary>
+            Reads boolean entry from the grammar file.
+            </summary>
+            <returns>Boolean entry content.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadEntryType">
+            <summary>
+            Reads entry type.
+            </summary>
+            <returns>Entry type.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadString">
+            <summary>
+            Reads string from the grammar file.
+            </summary>
+            <returns>String value.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadInt16">
+            <summary>
+            Reads two byte integer Int16 from the grammar file.
+            </summary>
+            <returns>Int16 value.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadByte">
+            <summary>
+            Reads byte from the grammar file.
+            </summary>
+            <returns>Byte value.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.Grammar.ReadBool">
+            <summary>
+            Reads boolean from the grammar file.
+            </summary>
+            <returns>Boolean value.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.Name">
+            <summary>
+            Gets grammar name.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.Version">
+            <summary>
+            Gets grammar version.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.Author">
+            <summary>
+            Gets grammar author.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.About">
+            <summary>
+            Gets grammar description.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.StartSymbol">
+            <summary>
+            Gets the start symbol for the grammar.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.CaseSensitive">
+            <summary>
+            Gets the value indicating if the grammar is case sensitive.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.DfaInitialState">
+            <summary>
+            Gets initial DFA state.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.InitialLalrState">
+            <summary>
+            Gets initial LALR state.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.SymbolTable">
+            <summary>
+            Gets symbol table.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.CharSetTable">
+            <summary>
+            Gets char set table.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.RuleTable">
+            <summary>
+            Gets rule table.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.DfaStateTable">
+            <summary>
+            Gets DFA state table.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Grammar.LalrStateTable">
+            <summary>
+            Gets LALR state table.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.Grammar.RecordType">
+            <summary>
+            Record type byte in the binary grammar file.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.Grammar.EntryType">
+            <summary>
+            Entry type byte in the binary grammar file.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.Grammar.DfaEdge">
+            <summary>
+            Edge between DFA states.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.Symbol">
+            <summary>
+            Represents a terminal or nonterminal symbol used by the Deterministic
+            Finite Automata (DFA) and LALR Parser. 
+            </summary>
+            <remarks>
+            Symbols can be either terminals (which represent a class of 
+            tokens - such as identifiers) or nonterminals (which represent 
+            the rules and structures of the grammar).  Terminal symbols fall 
+            into several categories for use by the GOLD Parser Engine 
+            which are enumerated in <c>SymbolType</c> enumeration.
+            </remarks>
+        </member>
+        <member name="M:Morozov.GoldParser.Symbol.#ctor(System.Int32,System.String,Morozov.GoldParser.SymbolType)">
+            <summary>
+            Creates a new instance of <c>Symbol</c> class.
+            </summary>
+            <param name="index">Symbol index in symbol table.</param>
+            <param name="name">Name of the symbol.</param>
+            <param name="symbolType">Type of the symbol.</param>
+        </member>
+        <member name="M:Morozov.GoldParser.Symbol.ToString">
+            <summary>
+            Returns the text representation of the symbol.
+            In the case of nonterminals, the name is delimited by angle brackets,
+            special terminals are delimited by parenthesis
+            and terminals are delimited by single quotes 
+            (if special characters are present).
+            </summary>
+            <returns>String representation of symbol.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.Symbol.Index">
+            <summary>
+            Returns the index of the symbol in the GOLDParser object's Symbol Table.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Symbol.Name">
+            <summary>
+            Returns the name of the symbol.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Symbol.SymbolType">
+            <summary>
+            Returns an enumerated data type that denotes
+            the class of symbols that the object belongs to.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.Res">
+            <summary>
+            Custom resource class. Usage:
+            string s = Res.GetString(Res.MyIdenfitier);
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.Token">
+            <summary>
+            Represents individual syntactic units.
+            </summary>
+            <remarks>
+            While the Symbol represents a class of terminals and nonterminals, 
+            the Token represents an individual piece of information.
+            </remarks>
+        </member>
+        <member name="M:Morozov.GoldParser.Token.#ctor(Morozov.GoldParser.Symbol,System.String,System.Int32)">
+            <summary>
+            Create a new instance of <c>Token</c> class.
+            </summary>
+            <param name="symbol">Symbol associated with the token.</param>
+            <param name="data">Source text associated with the token.</param>
+            <param name="lineNumber">Line number where the token parsed.</param>
+        </member>
+        <member name="M:Morozov.GoldParser.Token.#ctor(Morozov.GoldParser.Symbol,Morozov.GoldParser.Reduction)">
+            <summary>
+            Create a new instance of <c>Token</c> class.
+            </summary>
+            <param name="symbol">Symbol associated with the token.</param>
+            <param name="reduction">Reduction associated with the token.</param>
+        </member>
+        <member name="M:Morozov.GoldParser.Token.ToString">
+            <summary>
+            Returns string representation of the token.
+            </summary>
+            <returns>String representation of the token.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.Token.LineNumber">
+            <summary>
+            Gets the line number for the token.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Token.Data">
+            <summary>
+            Gets the token data string.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Token.Symbol">
+            <summary>
+            Gets or sets the token symbol.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Token.Reduction">
+            <summary>
+            Gets or sets the token reduction.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Token.LalrState">
+            <summary>
+            Gets or sets the LALR state for the token.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Token.SymbolType">
+            <summary>
+            Gets the symbol type.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Token.Name">
+            <summary>
+            Gets the symbol name.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.LalrState">
+            <summary>
+            State of LALR parser.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.LalrState.#ctor(System.Int32,Morozov.GoldParser.LalrStateAction[],Morozov.GoldParser.LalrStateAction[])">
+            <summary>
+            Creates a new instance of the <c>LalrState</c> class
+            </summary>
+            <param name="index">Index of the LALR state in the LALR state table.</param>
+            <param name="actions">List of all available LALR actions in this state.</param>
+            <param name="transitionVector">Transition vector which has symbol index as an index.</param>
+        </member>
+        <member name="M:Morozov.GoldParser.LalrState.GetAction(System.Int32)">
+            <summary>
+            Returns state action by its index.
+            </summary>
+            <param name="index">State action index.</param>
+            <returns>LALR state action for the given index.</returns>
+        </member>
+        <member name="M:Morozov.GoldParser.LalrState.GetActionBySymbolIndex(System.Int32)">
+            <summary>
+            Returns LALR state action by symbol index.
+            </summary>
+            <param name="symbolIndex">Symbol Index to search for.</param>
+            <returns>LALR state action object.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.LalrState.Index">
+            <summary>
+            Gets index of the LALR state in LALR state table.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.LalrState.ActionCount">
+            <summary>
+            Gets LALR state action count.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.SymbolCollection">
+            <summary>
+            Contains read only collection of symbols.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.SymbolCollection.#ctor(Morozov.GoldParser.Symbol[])">
+            <summary>
+            Creates a new instance of <c>SymbolCollection</c> class.
+            </summary>
+            <param name="symbolTable">
+            Array of symbols to initialize the collection.
+            </param>
+        </member>
+        <member name="M:Morozov.GoldParser.SymbolCollection.GetEnumerator">
+            <summary>
+            Creates a new IEnumerator for the collection.
+            </summary>
+            <returns>New instance of IEnumerator.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.SymbolCollection.Item(System.Int32)">
+            <summary>
+            Gets a symbol by its index.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.SymbolCollection.Count">
+            <summary>
+            Gets number of symbols.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.LalrAction">
+            <summary>
+            LALR action type.
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.LalrAction.Shift">
+            <summary>
+            Shift a symbol and goto a state
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.LalrAction.Reduce">
+            <summary>
+            Reduce by a specified rule
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.LalrAction.Goto">
+            <summary>
+            Goto to a state on reduction
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.LalrAction.Accept">
+            <summary>
+            Input successfully parsed
+            </summary>
+        </member>
+        <member name="F:Morozov.GoldParser.LalrAction.Error">
+            <summary>
+            Error
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.DfaStateCollection">
+            <summary>
+            Contains read only collection of DFA states.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.DfaStateCollection.#ctor(Morozov.GoldParser.DfaState[])">
+            <summary>
+            Creates a new instance of <c>DfaStateCollection</c> class.
+            </summary>
+            <param name="dfaStateTable">
+            Array of DFA states to initialize the collection.
+            </param>
+        </member>
+        <member name="M:Morozov.GoldParser.DfaStateCollection.GetEnumerator">
+            <summary>
+            Creates a new IEnumerator for the collection.
+            </summary>
+            <returns>New instance of IEnumerator.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.DfaStateCollection.Item(System.Int32)">
+            <summary>
+            Gets DFA state by its index.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.DfaStateCollection.Count">
+            <summary>
+            Gets number of DFA states.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.DfaState">
+            <summary>
+            State in the Deterministic Finite Automata 
+            which is used by the tokenizer.
+            </summary>
+        </member>
+        <member name="M:Morozov.GoldParser.DfaState.#ctor(System.Int32,Morozov.GoldParser.Symbol,System.Collections.Hashtable)">
+            <summary>
+            Creates a new instance of the <c>DfaState</c> class.
+            </summary>
+            <param name="index">Index in the DFA state table.</param>
+            <param name="acceptSymbol">Symbol to accept.</param>
+            <param name="transitionVector">Transition vector.</param>
+        </member>
+        <member name="M:Morozov.GoldParser.DfaState.GetNextState(System.Char)">
+            <summary>
+            Returns next DFA state by the given character.
+            </summary>
+            <param name="value">Character to choose next DFA state.</param>
+            <returns>Index of DFA state in DFA state table.</returns>
+        </member>
+        <member name="P:Morozov.GoldParser.DfaState.Index">
+            <summary>
+            Gets index of the state in DFA state table.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.DfaState.AcceptSymbol">
+            <summary>
+            Gets the symbol which can be accepted in this DFA state.
+            </summary>
+        </member>
+        <member name="T:Morozov.GoldParser.Reduction">
+            <summary>
+            Represents reduced rule.
+            </summary>
+            <remarks>
+            This class is used by the engine to hold a reduced rule. Rather the contain
+            a list of Symbols, a reduction contains a list of Tokens corresponding to the
+            the rule it represents. 
+            </remarks>
+        </member>
+        <member name="M:Morozov.GoldParser.Reduction.#ctor(Morozov.GoldParser.Rule)">
+            <summary>
+            Creates a new instance of the <c>Reduction</c> class.
+            </summary>
+            <param name="rule">The rule on which the reduction is based.</param>
+        </member>
+        <member name="M:Morozov.GoldParser.Reduction.InsertToken(System.Int32,Morozov.GoldParser.Token)">
+            <summary>
+            Adds a token to thetoken list.
+            </summary>
+            <param name="index">Index to insert the token.</param>
+            <param name="token">Token to insert.</param>
+        </member>
+        <member name="P:Morozov.GoldParser.Reduction.LineNumber">
+            <summary>
+            Gets the reduction line number in the source file.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Reduction.Count">
+            <summary>
+            Gets number of tokens.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Reduction.Item(System.Int32)">
+            <summary>
+            Gets a token by its index.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Reduction.ReductionNumber">
+            <summary>
+            Gets or sets reduction numebr.
+            </summary>
+        </member>
+        <member name="P:Morozov.GoldParser.Reduction.Rule">
+            <summary>
+            Gets the reduction rule.
+            </summary>
+        </member>
+    </members>
+</doc>
